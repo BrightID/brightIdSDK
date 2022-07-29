@@ -7,49 +7,41 @@ import axios, { AxiosResponse } from "axios";
 
 /**
  *
- * @param operation - the status type to be temporarily removed from a contextId in a given application context.  Must be `sponsorship`, `verification`, or `link`
- * @param testingKey - the testing key corresponding to the application context being tested
- * @param context - the application context where the contextId's status is being removed
- * @param contextId - the contextId who's status is being temporarily removed
- * @param nodeUrl  - optional BrightID node url - of the form `http://node.brightid.org`
+ * @param operation - the status type to be temporarily removed from a appUserId in a given application.  Must be `sponsorship`, `verification`, or `link`
+ * @param testingKey - the testing key corresponding to the application being tested
+ * @param app - the application where the appUserId's status is being removed
+ * @param appUserId - the appUserId who's status is being temporarily removed
  *
  * @returns a success objected with a status code 204 and success message
  */
 export const putTestingBlock = async (
   operation: string,
   testingKey: string,
-  context: string,
-  contextId: string,
-  nodeUrl?: string
+  app: string,
+  appUserId: string
 ): Promise<any> => {
-  const endpoint = nodeUrl
-    ? nodeUrl + `/node/v5/testblocks`
-    : "https://app.brightid.org/node/v5/testblocks";
+  const endpoint = "https://app.brightid.org/node/v6/testblocks";
   try {
     let res: AxiosResponse;
     switch (operation) {
       case "verification":
         res = await axios.put(
-          `${endpoint}/${context}/verification/${contextId}`,
+          `${endpoint}/verifications/${app}/${appUserId}`,
           null,
           { params: { testingKey } }
         );
         break;
       case "sponsorship":
         res = await axios.put(
-          `${endpoint}/${context}/sponsorship/${contextId}`,
+          `${endpoint}/sponsorships/${app}/${appUserId}`,
           null,
           { params: { testingKey } }
         );
         break;
       case "link":
-        res = await axios.put(
-          `${endpoint}/${context}/link/${contextId}`,
-          null,
-          {
-            params: { testingKey },
-          }
-        );
+        res = await axios.put(`${endpoint}/link/{$app}/${appUserId}`, null, {
+          params: { testingKey },
+        });
         break;
       default:
         return {};
