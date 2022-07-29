@@ -1,16 +1,18 @@
 import {
-  generateDeeplink,
-  verifyContextId,
-  sponsor,
-  availableSponsorships,
+  sign,
+  appInformation,
+  signedVerification,
+  userProfile,
+  sponsorshipInformation,
 } from "./appMethods";
 import { putTestingBlock, removeTestingBlock } from "./testMethods";
 
 export {
-  generateDeeplink,
-  verifyContextId,
-  sponsor,
-  availableSponsorships,
+  sign,
+  appInformation,
+  signedVerification,
+  userProfile,
+  sponsorshipInformation,
   putTestingBlock,
   removeTestingBlock,
 };

@@ -5,150 +5,225 @@
  */
 
 import axios from "axios";
-import stringify from "fast-json-stable-stringify";
-import B64 from "base64-js";
-import nacl from "tweetnacl";
 
-/**
- *
- * @param context - the application context string to create a deeplink for
- * @param contextId - the contextId string corresponding to a specific BrightID
- * @param nodeUrl - optional BrightID node url - of the form `http://node.brightid.org`
- *
- * @returns a deeplink of the form `brightid://link-verification/http://node.brightid.org/testContext/testContextId`
- */
-export const generateDeeplink = (
-  context: string,
-  contextId: string,
-  nodeUrl?: string
-): string => {
-  const endpoint = nodeUrl ? nodeUrl : `http:%2f%2fnode.brightid.org`;
-  return `brightid://link-verification/${endpoint}/${context}/${contextId}`;
-};
-
-/**
- *
- * @param context - the application context in which to verify a given `contextId`'s status
- * @param contextId - the contextId to retrieve the status of
- * @param nodeUrl - optional BrightID node url - of the form `http://node.brightid.org`
- *
- * @returns An API response with a uniqueness indicator and a list of any other contextIds associated with the BrightID linked to the `contextId`
- */
-export const verifyContextId = async (
-  context: string,
-  contextId: string,
-  nodeUrl?: string
-): Promise<any> => {
-  const endpoint = nodeUrl
-    ? nodeUrl + "/node/v5/verifications"
-    : "https://app.brightid.org/node/v5/verifications";
-  try {
-    const res = await axios.get(`${endpoint}/${context}/${contextId}`);
-    console.log(res.data);
-    return res.data.data;
-  } catch (err) {
-    console.log(err.response);
-    return {
-      status: err.response.status,
-      statusText: err.response.statusText,
-      data: err.response.data,
-    };
-  }
-};
-
-/**
- *
- * @param key - the sponsor private key needed for sponsoring a BrightID
- * @param context  - the application context in which to sponsor a given BrightID
- * @param contextId - the contextId linked to the BrightID being sponsored
- * @param nodeUrl - optional BrightID node url - of the form `http://node.brightid.org`
- *
- * @returns A hash of the operation if successfully submitted to the BrightID node or an error
- */
-export const sponsor = async (
-  key: string,
-  context: string,
-  contextId: string,
-  nodeUrl?: string
-): Promise<any> => {
-  const endpoint = nodeUrl
-    ? nodeUrl + `/node/v5/operations`
-    : "https://app.brightid.org/node/v5/operations";
-  let sponsorships = await availableSponsorships(context, nodeUrl);
-
-  if (typeof sponsorships === "number" && sponsorships < 1) {
-    return { status: "error", statusReason: "no available sponsorships" };
-  }
-
-  if (typeof sponsorships !== "number") return sponsorships;
-
-  const op = {
-    name: "Sponsor",
-    app: context,
-    contextId: contextId,
-    timestamp: Date.now(),
-    v: 5,
-    sig: "",
+type SignatureData = {
+  uid: string;
+  sig: {
+    rho: string;
+    omega: string;
+    sigma: string;
+    delta: string;
   };
+  verification: string;
+  roundedTimestamp: number;
+};
 
-  const message = getMessage(op);
-  const arrayedMessage = Buffer.from(message);
-  const keyBuffer = B64.toByteArray(key);
-  let signature = nacl.sign.detached(arrayedMessage, keyBuffer);
-  op.sig = B64.fromByteArray(signature);
-  console.log(op);
+/**
+ *
+ * @param app - the application that is doing the signing
+ * @param appUserId - the appUserId string corresponding to a specific user in a BrightID app
+ *
+ * @returns {SignatureData} - the signature data for the appUserId
+ */
+export const sign = async (app: string, appUserId: string) => {
+  const endpoint = "https://app.brightid.org/node/v6/verifications";
   try {
-    let res = await axios.post(endpoint, op);
-    console.log(res);
-    return { status: "success", statusReason: res.data.data.hash };
+    let headers = { "Content-Type": "application/json" };
+    let sig = { rho: "", omega: "", sigma: "", delta: "" };
+    const res = await axios.post(
+      `${endpoint}/${app}/${appUserId}`,
+      {
+        uid: appUserId,
+        sig,
+        verification: "",
+        roundedTimestamp: Date.now(),
+      } as SignatureData,
+      {
+        headers,
+      }
+    );
+    console.log("Res:", res);
+    return res.data as SignatureData;
   } catch (err) {
-    console.log(err.response);
-    return {
-      status: err.response.status,
-      statusText: err.response.statusText,
-      data: err.response.data,
-    };
+    if (axios.isAxiosError(err)) {
+      console.error(err.response?.data.errorMessage);
+      return err;
+    } else {
+      console.error(err);
+      return;
+    }
+  }
+};
+
+type AppData = {
+  id: string;
+  name: string;
+  context?: string;
+  verification: string;
+  verifications?: string[];
+  verificationsUrl: string;
+  logo?: string;
+  url?: string;
+  assignedSponsorships?: number;
+  unusedSponsorships?: number;
+  testing?: boolean;
+  idAsHex?: boolean;
+  usingBlindSig?: boolean;
+  verificationExpirationLength?: number;
+  sponsorPublicKey?: string;
+  nodeUrl?: string;
+  soulbound?: boolean;
+  callbackUrl?: string;
+};
+
+/**
+ *
+ * @param app - the application app to get information about
+ *
+ * @returns {AppData} - the signature data for the appUserId
+ */
+export const appInformation = async (app: string) => {
+  const endpoint = "https://app.brightid.org/node/v6/apps";
+  try {
+    const res = await axios.get(`${endpoint}/${app}`);
+    return res.data as AppData;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.error(err.response?.data.errorMessage);
+      return err;
+    } else {
+      console.error(err);
+      return;
+    }
+  }
+};
+
+type SignedVerification = {
+  unique: boolean;
+  app: string;
+  appUserId: string;
+  verification: string;
+  verificationHash?: string;
+  timestamp?: number;
+  sig?: string;
+  publicKey?: string;
+};
+
+/**
+ *
+ * @param app - the application app to get information about
+ * @param appUserId - the appUserId string corresponding to a specific user in a BrightID app
+ * @param params - the query parameters to pass to the signed verification endpoint
+ *
+ * @returns {SignedVerification}
+ */
+export const signedVerification = async (
+  app: string,
+  appUserId: string,
+  params?: {
+    includeHash?: boolean;
+    signed?: "eth" | "nacl";
+    timestamp?: string;
+  }
+) => {
+  const endpoint = "https://app.brightid.org/node/v6/verifications";
+  try {
+    let queryParams = encodeQueryData(params);
+    const res = await axios.get(
+      `${endpoint}/${app}/${appUserId}?${queryParams}` // Need a better way to do this
+    );
+    return res.data as SignedVerification;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.error(err.response?.data.errorMessage);
+      return err;
+    } else {
+      console.error(err);
+      return;
+    }
   }
 };
 
 /**
  * @ignore
+ * ':
  */
-const getMessage = (op: any) => {
-  const signedOp: any = {};
-  for (let k in op) {
-    if (["sig", "sig1", "sig2", "hash"].includes(k)) {
-      continue;
-    }
-    signedOp[k] = op[k];
-  }
-  return stringify(signedOp);
+const encodeQueryData = (data: any) => {
+  const ret = [];
+  for (let d in data)
+    ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+  return ret.join("&");
+};
+
+type Connection = {
+  id: string;
+  isActive: boolean;
+  activeAfter: number;
+  activeBefore: number;
+};
+type UserProfile = {
+  id: string;
+  connectionsNum: number;
+  groupsNum: number;
+  createdAt: number;
+  reports: Array<{ id: string; reason: string }>;
+  verifications: any[];
+  signingKeys: string[];
+  recoveryConnections: Connection[];
+  sponsored: boolean;
+  mutualConnections: string[];
+  mutualGroups: string[];
+  level: "reported" | "suspicious" | "just met" | "already known" | "recovery";
+  connectedAt: number;
 };
 
 /**
  *
- * @param context - the application context to retrieve available sponsorships for
- * @param nodeUrl - optional BrightID node url - of the form `http://node.brightid.org`
+ * @param id - the BrightID user ID of the user to get information about
  *
- * @returns     Returns the number of sponsorships available to the specified `context`
+ * @returns {UserProfile}
  */
-export const availableSponsorships = async (
-  context: string,
-  nodeUrl?: string
-): Promise<number | any> => {
-  const endpoint = nodeUrl
-    ? nodeUrl + `/node/v5/testblocks`
-    : "https://app.brightid.org/node/v5/apps";
+export const userProfile = async (id: string) => {
+  const endpoint = "https://app.brightid.org/node/v6/users";
   try {
-    let res = await axios.get(`${endpoint}/${context}`);
-    console.log(res);
-    return res.data.data.unusedSponsorships;
+    const res = await axios.get(`${endpoint}/${id}/profile`);
+    return res.data as UserProfile;
   } catch (err) {
-    console.log(err.response);
-    return {
-      status: err.response.status,
-      statusText: err.response.statusText,
-      data: err.response.data,
-    };
+    if (axios.isAxiosError(err)) {
+      console.error(err.response?.data.errorMessage);
+      return err;
+    } else {
+      console.error(err);
+      return;
+    }
+  }
+};
+
+type SponsorshipData = {
+  app: string;
+  appHasAuthorized: boolean;
+  spendRequested: boolean;
+  timestamp: number;
+};
+
+/**
+ *
+ * @param appUserId - the appUserId string corresponding to a specific user in a BrightID app
+ *
+ * @returns {SponsorshipData} - the sponsorship status for the user
+ */
+export const sponsorshipInformation = async (appUserId: string) => {
+  const endpoint = "https://app.brightid.org/node/v6/sponsorships";
+  try {
+    const res = await axios.get(`${endpoint}/${appUserId}`);
+    return res.data as SponsorshipData;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.error(err.response?.data.errorMessage);
+      return err;
+    } else {
+      console.error(err);
+      return;
+    }
   }
 };

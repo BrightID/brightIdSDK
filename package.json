@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "licence": "MIT",
   "author": {
-    "name": "acolytec3"
+    "name": "acolytec3, Victor Ginelli (@youngkidwarrior)"
   },
   "main": "dist/index.js",
   "description": "A typescript library for simplifying integration of applications with BrightID",
