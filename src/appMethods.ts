@@ -5,54 +5,23 @@
  */
 
 import axios from "axios";
-
-type SignatureData = {
-  uid: string;
-  sig: {
-    rho: string;
-    omega: string;
-    sigma: string;
-    delta: string;
-  };
-  verification: string;
-  roundedTimestamp: number;
-};
+import stringify from "fast-json-stable-stringify";
+import B64 from "base64-js";
+import * as ed from "@noble/ed25519";
 
 /**
  *
- * @param app - the application that is doing the signing
- * @param appUserId - the appUserId string corresponding to a specific user in a BrightID app
+ * @param context - the application context string to create a deeplink for
+ * @param contextId - the contextId string corresponding to a specific BrightID
  *
- * @returns {SignatureData} - the signature data for the appUserId
+ * @returns a deeplink of the form `brightid://link-verification/http://node.brightid.org/testContext/testContextId`
  */
-export const sign = async (app: string, appUserId: string) => {
-  const endpoint = "https://app.brightid.org/node/v6/verifications";
-  try {
-    let headers = { "Content-Type": "application/json" };
-    let sig = { rho: "", omega: "", sigma: "", delta: "" };
-    const res = await axios.post(
-      `${endpoint}/${app}/${appUserId}`,
-      {
-        uid: appUserId,
-        sig,
-        verification: "",
-        roundedTimestamp: Date.now(),
-      } as SignatureData,
-      {
-        headers,
-      }
-    );
-    console.log("Res:", res);
-    return res.data as SignatureData;
-  } catch (err) {
-    if (axios.isAxiosError(err)) {
-      console.error(err.response?.data.errorMessage);
-      return err;
-    } else {
-      console.error(err);
-      return;
-    }
-  }
+export const generateDeeplink = (
+  context: string,
+  contextId: string
+): string => {
+  const endpoint = `http:%2f%2fnode.brightid.org`;
+  return `brightid://link-verification/${endpoint}/${context}/${contextId}`;
 };
 
 type AppData = {
@@ -72,7 +41,7 @@ type AppData = {
   verificationExpirationLength?: number;
   sponsorPublicKey?: string;
   nodeUrl?: string;
-  soulbound?: boolean;
+  soulbound: boolean;
   callbackUrl?: string;
 };
 
@@ -89,13 +58,24 @@ export const appInformation = async (app: string) => {
     return res.data as AppData;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.error(err.response?.data.errorMessage);
+      console.error(err.response?.data);
       return err;
     } else {
       console.error(err);
       return;
     }
   }
+};
+
+/**
+ * @ignore
+ * ':
+ */
+const encodeQueryData = (data: any) => {
+  const ret = [];
+  for (let d in data)
+    ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+  return ret.join("&");
 };
 
 type SignedVerification = {
@@ -123,7 +103,7 @@ export const signedVerification = async (
   params?: {
     includeHash?: boolean;
     signed?: "eth" | "nacl";
-    timestamp?: string;
+    timestamp?: "seconds" | "milliseconds";
   }
 ) => {
   const endpoint = "https://app.brightid.org/node/v6/verifications";
@@ -135,62 +115,7 @@ export const signedVerification = async (
     return res.data as SignedVerification;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.error(err.response?.data.errorMessage);
-      return err;
-    } else {
-      console.error(err);
-      return;
-    }
-  }
-};
-
-/**
- * @ignore
- * ':
- */
-const encodeQueryData = (data: any) => {
-  const ret = [];
-  for (let d in data)
-    ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
-  return ret.join("&");
-};
-
-type Connection = {
-  id: string;
-  isActive: boolean;
-  activeAfter: number;
-  activeBefore: number;
-};
-type UserProfile = {
-  id: string;
-  connectionsNum: number;
-  groupsNum: number;
-  createdAt: number;
-  reports: Array<{ id: string; reason: string }>;
-  verifications: any[];
-  signingKeys: string[];
-  recoveryConnections: Connection[];
-  sponsored: boolean;
-  mutualConnections: string[];
-  mutualGroups: string[];
-  level: "reported" | "suspicious" | "just met" | "already known" | "recovery";
-  connectedAt: number;
-};
-
-/**
- *
- * @param id - the BrightID user ID of the user to get information about
- *
- * @returns {UserProfile}
- */
-export const userProfile = async (id: string) => {
-  const endpoint = "https://app.brightid.org/node/v6/users";
-  try {
-    const res = await axios.get(`${endpoint}/${id}/profile`);
-    return res.data as UserProfile;
-  } catch (err) {
-    if (axios.isAxiosError(err)) {
-      console.error(err.response?.data.errorMessage);
+      console.error(err.response?.data);
       return err;
     } else {
       console.error(err);
@@ -219,11 +144,65 @@ export const sponsorshipInformation = async (appUserId: string) => {
     return res.data as SponsorshipData;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.error(err.response?.data.errorMessage);
+      console.error(err.response?.data);
       return err;
     } else {
       console.error(err);
       return;
+    }
+  }
+};
+
+/**
+ * @ignore
+ */
+const getMessage = (op: any) => {
+  const signedOp: any = {};
+  for (let k in op) {
+    if (["sig", "sig1", "sig2", "hash"].includes(k)) {
+      continue;
+    }
+    signedOp[k] = op[k];
+  }
+  return stringify(signedOp);
+};
+
+type SponsorData = {
+  hash: string;
+};
+
+export const sponsor = async (
+  key: string | Uint8Array,
+  app: string,
+  appUserId: string
+) => {
+  let endpoint = "http://app.brightid.org/node/v6/operation";
+  let timestamp = Date.now();
+  let op = {
+    name: "Sponsor",
+    app,
+    appUserId,
+    timestamp,
+    v: 6,
+    sig: "",
+  };
+
+  const message = getMessage(op);
+  const arrayedMessage = Buffer.from(message);
+
+  try {
+    const signature = await ed.sign(arrayedMessage, key);
+    op.sig = B64.fromByteArray(signature);
+
+    let res = await axios.post(endpoint, op);
+    return res.data as SponsorData;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.error(err.response?.data);
+      return err;
+    } else {
+      console.error(err);
+      return err;
     }
   }
 };
