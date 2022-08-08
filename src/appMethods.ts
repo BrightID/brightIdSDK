@@ -11,17 +11,14 @@ import * as ed from "@noble/ed25519";
 
 /**
  *
- * @param context - the application context string to create a deeplink for
- * @param contextId - the contextId string corresponding to a specific BrightID
+ * @param app - the application string to create a deeplink for
+ * @param appUserId - the appUserId string corresponding to a specific BrightID
  *
  * @returns a deeplink of the form `brightid://link-verification/http://node.brightid.org/testContext/testContextId`
  */
-export const generateDeeplink = (
-  context: string,
-  contextId: string
-): string => {
+export const generateDeeplink = (app: string, appUserId: string): string => {
   const endpoint = `http:%2f%2fnode.brightid.org`;
-  return `brightid://link-verification/${endpoint}/${context}/${contextId}`;
+  return `brightid://link-verification/${endpoint}/${app}/${appUserId}`;
 };
 
 type AppData = {
@@ -47,11 +44,11 @@ type AppData = {
 
 /**
  *
- * @param app - the application app to get information about
+ * @param app - the BrightID unique app name to get information about
  *
- * @returns {AppData} - the signature data for the appUserId
+ * @returns {AppData} - Information about the BrightId app
  */
-export const appInformation = async (app: string) => {
+export const getApp = async (app: string) => {
   const endpoint = "https://app.brightid.org/node/v6/apps";
   try {
     const res = await axios.get(`${endpoint}/${app}`);
@@ -68,8 +65,30 @@ export const appInformation = async (app: string) => {
 };
 
 /**
+ *
+ * @param app - the application to retrieve unused sponsorships for
+ *
+ * @returns {AppData["unusedSponsorships"]} Returns the number of sponsorships available to the specified `app`
+ */
+export const unusedSponsorships = async (app: string) => {
+  const endpoint = "https://app.brightid.org/node/v6/apps";
+  try {
+    const res = await axios.get(`${endpoint}/${app}`);
+    const appData = res.data as AppData;
+    return appData.unusedSponsorships;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.error(err.response?.data);
+      return err;
+    } else {
+      console.error(err);
+      return;
+    }
+  }
+};
+
+/**
  * @ignore
- * ':
  */
 const encodeQueryData = (data: any) => {
   const ret = [];
@@ -91,13 +110,13 @@ type SignedVerification = {
 
 /**
  *
- * @param app - the application app to get information about
+ * @param app - the application app to get signed verification from
  * @param appUserId - the appUserId string corresponding to a specific user in a BrightID app
  * @param params - the query parameters to pass to the signed verification endpoint
  *
  * @returns {SignedVerification}
  */
-export const signedVerification = async (
+export const userVerificationStatus = async (
   app: string,
   appUserId: string,
   params?: {
@@ -137,7 +156,7 @@ type SponsorshipData = {
  *
  * @returns {SponsorshipData} - the sponsorship status for the user
  */
-export const sponsorshipInformation = async (appUserId: string) => {
+export const userSponsorshipStatus = async (appUserId: string) => {
   const endpoint = "https://app.brightid.org/node/v6/sponsorships";
   try {
     const res = await axios.get(`${endpoint}/${appUserId}`);
@@ -171,12 +190,28 @@ type SponsorData = {
   hash: string;
 };
 
+/**
+ *
+ * @param key - the sponsor private key needed for sponsoring a BrightID
+ * @param app  - the application  in which to sponsor a given BrightID
+ * @param appUserId - the appUserId linked to the BrightID user being sponsored
+ *
+ * @returns {SponsorData} A hash of the operation if successfully submitted to the BrightID node or an error
+ */
 export const sponsor = async (
   key: string | Uint8Array,
   app: string,
   appUserId: string
 ) => {
   let endpoint = "http://app.brightid.org/node/v6/operation";
+
+  let sponsorships = unusedSponsorships(app);
+
+  if (typeof sponsorships === "number" && sponsorships < 1)
+    return { error: true, errorMessage: "No available sponsorships" };
+
+  if (typeof sponsorships !== "number") return sponsorships;
+
   let timestamp = Date.now();
   let op = {
     name: "Sponsor",
