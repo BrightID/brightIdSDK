@@ -17,8 +17,7 @@ import * as ed from "@noble/ed25519";
  * @returns a deeplink of the form `brightid://link-verification/http://node.brightid.org/testContext/testContextId`
  */
 export const generateDeeplink = (app: string, appUserId: string): string => {
-  const endpoint = `http:%2f%2fnode.brightid.org`;
-  return `brightid://link-verification/${endpoint}/${app}/${appUserId}`;
+  return `brightid://link-verification/${app}/${appUserId}`;
 };
 
 type AppData = {
