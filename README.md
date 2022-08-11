@@ -11,7 +11,8 @@ Exposes all necessary functions for integrating an application with BrightID as 
 
 ```bash
 # npm
-npm i brightid_sdk
+yarn add https://github.com/BrightID/brightid-javascript-sdk.git
+npm i BrightID/brightid-javascript-sdk
 ```
 
 # 📖 Docs
