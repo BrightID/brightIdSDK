@@ -44,15 +44,13 @@ export const verifyContextId = async (
     : "https://app.brightid.org/node/v5/verifications";
   try {
     const res = await axios.get(`${endpoint}/${context}/${contextId}`);
-    console.log(res.data);
     return res.data.data;
   } catch (err) {
-    console.log(err.response);
-    return {
-      status: err.response.status,
-      statusText: err.response.statusText,
-      data: err.response.data,
-    };
+    if (axios.isAxiosError(err)) {
+      throw err.response?.data;
+    } else {
+      throw err;
+    }
   }
 };
 
@@ -77,7 +75,7 @@ export const sponsor = async (
   let sponsorships = await availableSponsorships(context, nodeUrl);
 
   if (typeof sponsorships === "number" && sponsorships < 1) {
-    return { status: "error", statusReason: "no available sponsorships" };
+    throw { error: true, errorMessage: "No available sponsorships" };
   }
 
   if (typeof sponsorships !== "number") return sponsorships;
@@ -96,18 +94,15 @@ export const sponsor = async (
   const keyBuffer = B64.toByteArray(key);
   let signature = nacl.sign.detached(arrayedMessage, keyBuffer);
   op.sig = B64.fromByteArray(signature);
-  console.log(op);
   try {
     let res = await axios.post(endpoint, op);
-    console.log(res);
-    return { status: "success", statusReason: res.data.data.hash };
+    return res.data.data;
   } catch (err) {
-    console.log(err.response);
-    return {
-      status: err.response.status,
-      statusText: err.response.statusText,
-      data: err.response.data,
-    };
+    if (axios.isAxiosError(err)) {
+      throw err.response?.data;
+    } else {
+      throw err;
+    }
   }
 };
 
@@ -141,14 +136,12 @@ export const availableSponsorships = async (
     : "https://app.brightid.org/node/v5/apps";
   try {
     let res = await axios.get(`${endpoint}/${context}`);
-    console.log(res);
     return res.data.data.unusedSponsorships;
   } catch (err) {
-    console.log(err.response);
-    return {
-      status: err.response.status,
-      statusText: err.response.statusText,
-      data: err.response.data,
-    };
+    if (axios.isAxiosError(err)) {
+      throw err.response?.data;
+    } else {
+      throw err;
+    }
   }
 };
