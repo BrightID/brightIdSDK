@@ -183,7 +183,7 @@ type SponsorData = {
 
 /**
  *
- * @param key - the 64 byte private key attached to the {app} used to sponsor a BrightID
+ * @param key - A Base64 string representation of the 64 byte sponsorship private key for the {app}
  * @param app  - the application  in which to sponsor a given BrightID
  * @param appUserId - the appUserId linked to the BrightID user being sponsored
  *
