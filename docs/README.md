@@ -1,5 +1,5 @@
 
-# brightid_sdk
+# brightid_sdk_v5
 
 ## Index
 
@@ -18,7 +18,7 @@
 
 ▸ **availableSponsorships**(`context`: string, `nodeUrl?`: undefined | string): *Promise‹number | any›*
 
-*Defined in [appMethods.ts:135](https://github.com/acolytec3/brightIdSDK/blob/fadd589/src/appMethods.ts#L135)*
+*Defined in [appMethods.ts:130](https://github.com/BrightID/brightIdSDK/blob/702f196/src/appMethods.ts#L130)*
 
 **Parameters:**
 
@@ -37,7 +37,7 @@ ___
 
 ▸ **generateDeeplink**(`context`: string, `contextId`: string, `nodeUrl?`: undefined | string): *string*
 
-*Defined in [appMethods.ts:20](https://github.com/acolytec3/brightIdSDK/blob/fadd589/src/appMethods.ts#L20)*
+*Defined in [appMethods.ts:20](https://github.com/BrightID/brightIdSDK/blob/702f196/src/appMethods.ts#L20)*
 
 **Parameters:**
 
@@ -57,7 +57,7 @@ ___
 
 ▸ **putTestingBlock**(`operation`: string, `testingKey`: string, `context`: string, `contextId`: string, `nodeUrl?`: undefined | string): *Promise‹any›*
 
-*Defined in [testMethods.ts:18](https://github.com/acolytec3/brightIdSDK/blob/fadd589/src/testMethods.ts#L18)*
+*Defined in [testMethods.ts:18](https://github.com/BrightID/brightIdSDK/blob/702f196/src/testMethods.ts#L18)*
 
 **Parameters:**
 
@@ -79,7 +79,7 @@ ___
 
 ▸ **removeTestingBlock**(`operation`: string, `testingKey`: string, `context`: string, `contextId`: string, `nodeUrl?`: undefined | string): *Promise‹any›*
 
-*Defined in [testMethods.ts:83](https://github.com/acolytec3/brightIdSDK/blob/fadd589/src/testMethods.ts#L83)*
+*Defined in [testMethods.ts:83](https://github.com/BrightID/brightIdSDK/blob/702f196/src/testMethods.ts#L83)*
 
 **Parameters:**
 
@@ -101,7 +101,7 @@ ___
 
 ▸ **sponsor**(`key`: string, `context`: string, `contextId`: string, `nodeUrl?`: undefined | string): *Promise‹any›*
 
-*Defined in [appMethods.ts:68](https://github.com/acolytec3/brightIdSDK/blob/fadd589/src/appMethods.ts#L68)*
+*Defined in [appMethods.ts:66](https://github.com/BrightID/brightIdSDK/blob/702f196/src/appMethods.ts#L66)*
 
 **Parameters:**
 
@@ -122,7 +122,7 @@ ___
 
 ▸ **verifyContextId**(`context`: string, `contextId`: string, `nodeUrl?`: undefined | string): *Promise‹any›*
 
-*Defined in [appMethods.ts:37](https://github.com/acolytec3/brightIdSDK/blob/fadd589/src/appMethods.ts#L37)*
+*Defined in [appMethods.ts:37](https://github.com/BrightID/brightIdSDK/blob/702f196/src/appMethods.ts#L37)*
 
 **Parameters:**
 

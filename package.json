@@ -1,10 +1,8 @@
 {
-  "name": "brightid_sdk",
-  "version": "1.0.1",
+  "name": "brightid_sdk_v5",
+  "version": "1.0.2",
   "licence": "MIT",
-  "author": {
-    "name": "acolytec3"
-  },
+  "authors": "@acolytec3, @youngkidwarrior (Victor Ginelli)",
   "main": "dist/index.js",
   "description": "A typescript library for simplifying integration of applications with BrightID",
   "keywords": [
@@ -21,10 +19,10 @@
     "test": "jest",
     "upgrade-interactive": "npm-check --update"
   },
-  "homepage": "https://github.com/acolytec3/brightIdSDK",
+  "homepage": "https://github.com/BrightID/brightid-javascript-sdk",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/acolytec3/brightIdSDK.git"
+    "url": "git+https://github.com/BrightID/brightid-javascript-sdk/tree/v5-soulbound"
   },
   "husky": {
     "hooks": {
