@@ -1,6 +1,6 @@
-[brightid_sdk](README.md)
+[brightid_sdk_v6](README.md)
 
-# brightid_sdk
+# brightid_sdk_v6
 
 ## Index
 
@@ -26,7 +26,7 @@
 
 Ƭ **AppData**: *object*
 
-*Defined in [appMethods.ts:23](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L23)*
+*Defined in [appMethods.ts:23](https://github.com/BrightID/brightIdSDK/blob/2720109/src/appMethods.ts#L23)*
 
 #### Type declaration:
 
@@ -72,7 +72,7 @@ ___
 
 Ƭ **SignedVerification**: *object*
 
-*Defined in [appMethods.ts:95](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L95)*
+*Defined in [appMethods.ts:95](https://github.com/BrightID/brightIdSDK/blob/2720109/src/appMethods.ts#L95)*
 
 #### Type declaration:
 
@@ -98,7 +98,7 @@ ___
 
 Ƭ **SponsorData**: *object*
 
-*Defined in [appMethods.ts:180](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L180)*
+*Defined in [appMethods.ts:180](https://github.com/BrightID/brightIdSDK/blob/2720109/src/appMethods.ts#L180)*
 
 #### Type declaration:
 
@@ -110,7 +110,7 @@ ___
 
 Ƭ **SponsorshipData**: *object*
 
-*Defined in [appMethods.ts:139](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L139)*
+*Defined in [appMethods.ts:139](https://github.com/BrightID/brightIdSDK/blob/2720109/src/appMethods.ts#L139)*
 
 #### Type declaration:
 
@@ -128,7 +128,7 @@ ___
 
 ▸ **generateDeeplink**(`app`: string, `appUserId`: string): *string*
 
-*Defined in [appMethods.ts:19](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L19)*
+*Defined in [appMethods.ts:19](https://github.com/BrightID/brightIdSDK/blob/2720109/src/appMethods.ts#L19)*
 
 **Parameters:**
 
@@ -147,7 +147,7 @@ ___
 
 ▸ **getApp**(`app`: string): *Promise‹object›*
 
-*Defined in [appMethods.ts:50](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L50)*
+*Defined in [appMethods.ts:50](https://github.com/BrightID/brightIdSDK/blob/2720109/src/appMethods.ts#L50)*
 
 **Parameters:**
 
@@ -165,7 +165,7 @@ ___
 
 ▸ **sponsor**(`key`: string, `app`: string, `appUserId`: string): *Promise‹undefined | object | object›*
 
-*Defined in [appMethods.ts:192](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L192)*
+*Defined in [appMethods.ts:192](https://github.com/BrightID/brightIdSDK/blob/2720109/src/appMethods.ts#L192)*
 
 **Parameters:**
 
@@ -185,7 +185,7 @@ ___
 
 ▸ **unusedSponsorships**(`app`: string): *Promise‹undefined | number›*
 
-*Defined in [appMethods.ts:70](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L70)*
+*Defined in [appMethods.ts:70](https://github.com/BrightID/brightIdSDK/blob/2720109/src/appMethods.ts#L70)*
 
 **Parameters:**
 
@@ -203,7 +203,7 @@ ___
 
 ▸ **userSponsorshipStatus**(`appUserId`: string): *Promise‹object›*
 
-*Defined in [appMethods.ts:152](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L152)*
+*Defined in [appMethods.ts:152](https://github.com/BrightID/brightIdSDK/blob/2720109/src/appMethods.ts#L152)*
 
 **Parameters:**
 
@@ -221,7 +221,7 @@ ___
 
 ▸ **userVerificationStatus**(`app`: string, `appUserId`: string, `params?`: undefined | object): *Promise‹object›*
 
-*Defined in [appMethods.ts:114](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L114)*
+*Defined in [appMethods.ts:114](https://github.com/BrightID/brightIdSDK/blob/2720109/src/appMethods.ts#L114)*
 
 **Parameters:**
 

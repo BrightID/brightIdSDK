@@ -1,10 +1,15 @@
 {
-  "name": "brightid_sdk",
-  "version": "2.0.0",
+  "name": "brightid_sdk_v6",
+  "version": "2.0.1",
   "licence": "MIT",
-  "author": {
-    "name": "acolytec3, Victor Ginelli (@youngkidwarrior)"
-  },
+  "authors": [
+    {
+      "name": "acolytec3"
+    },
+    {
+      "name": "Victor Ginelli (@youngkidwarrior)"
+    }
+  ],
   "main": "dist/index.js",
   "description": "A typescript library for simplifying integration of applications with BrightID",
   "keywords": [
@@ -21,10 +26,10 @@
     "test": "jest",
     "upgrade-interactive": "npm-check --update"
   },
-  "homepage": "https://github.com/acolytec3/brightIdSDK",
+  "homepage": "https://github.com/BrightID/brightid-javascript-sdk",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/acolytec3/brightIdSDK.git"
+    "url": "git+https://github.com/BrightID/brightid-javascript-sdk"
   },
   "husky": {
     "hooks": {

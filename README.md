@@ -1,5 +1,4 @@
-BrightID SDK for Applications
-===========================
+# BrightID SDK for Applications
 
 A typescript library for simplifying integration of applications with BrightID
 
@@ -10,9 +9,12 @@ Exposes all necessary functions for integrating an application with BrightID as 
 # ⚙ Install
 
 ```bash
-# npm
-yarn add https://github.com/BrightID/brightid-javascript-sdk.git
-npm i BrightID/brightid-javascript-sdk
+#npm
+npm i brightid_sdk_v6
+
+# yarn
+yarn add brightid_sdk_v6
+
 ```
 
 # 📖 Docs
@@ -30,8 +32,9 @@ Predefined scripts in `package.json`:
 - lint: lints your code
 - prepublishOnly: builds your sources for deployment (to npm)
 - size-limit: checks your bundle size limit
-- test: run tests 
+- test: run tests
 - upgrade-interactive: upgrades your dependencies interactively (like with yarn)
+
 # 📃 Licence
 
 Read the [licence](./LICENCE)
