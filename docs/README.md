@@ -26,7 +26,7 @@
 
 Ƭ **AppData**: *object*
 
-*Defined in [appMethods.ts:24](https://github.com/BrightID/brightIdSDK/blob/a07c711/src/appMethods.ts#L24)*
+*Defined in [appMethods.ts:23](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L23)*
 
 #### Type declaration:
 
@@ -72,7 +72,7 @@ ___
 
 Ƭ **SignedVerification**: *object*
 
-*Defined in [appMethods.ts:100](https://github.com/BrightID/brightIdSDK/blob/a07c711/src/appMethods.ts#L100)*
+*Defined in [appMethods.ts:95](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L95)*
 
 #### Type declaration:
 
@@ -98,7 +98,7 @@ ___
 
 Ƭ **SponsorData**: *object*
 
-*Defined in [appMethods.ts:189](https://github.com/BrightID/brightIdSDK/blob/a07c711/src/appMethods.ts#L189)*
+*Defined in [appMethods.ts:180](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L180)*
 
 #### Type declaration:
 
@@ -110,7 +110,7 @@ ___
 
 Ƭ **SponsorshipData**: *object*
 
-*Defined in [appMethods.ts:146](https://github.com/BrightID/brightIdSDK/blob/a07c711/src/appMethods.ts#L146)*
+*Defined in [appMethods.ts:139](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L139)*
 
 #### Type declaration:
 
@@ -128,7 +128,7 @@ ___
 
 ▸ **generateDeeplink**(`app`: string, `appUserId`: string): *string*
 
-*Defined in [appMethods.ts:19](https://github.com/BrightID/brightIdSDK/blob/a07c711/src/appMethods.ts#L19)*
+*Defined in [appMethods.ts:19](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L19)*
 
 **Parameters:**
 
@@ -145,9 +145,9 @@ ___
 
 ### `Const` getApp
 
-▸ **getApp**(`app`: string): *Promise‹undefined | object | AxiosError‹any››*
+▸ **getApp**(`app`: string): *Promise‹object›*
 
-*Defined in [appMethods.ts:51](https://github.com/BrightID/brightIdSDK/blob/a07c711/src/appMethods.ts#L51)*
+*Defined in [appMethods.ts:50](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L50)*
 
 **Parameters:**
 
@@ -155,7 +155,7 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `app` | string | the BrightID unique app name to get information about  |
 
-**Returns:** *Promise‹undefined | object | AxiosError‹any››*
+**Returns:** *Promise‹object›*
 
 - Information about the BrightId app
 
@@ -163,19 +163,19 @@ ___
 
 ### `Const` sponsor
 
-▸ **sponsor**(`key`: string | Uint8Array, `app`: string, `appUserId`: string): *Promise‹any›*
+▸ **sponsor**(`key`: string, `app`: string, `appUserId`: string): *Promise‹undefined | object | object›*
 
-*Defined in [appMethods.ts:201](https://github.com/BrightID/brightIdSDK/blob/a07c711/src/appMethods.ts#L201)*
+*Defined in [appMethods.ts:192](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L192)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`key` | string &#124; Uint8Array | the sponsor private key needed for sponsoring a BrightID |
+`key` | string | the 64 byte private key attached to the {app} used to sponsor a BrightID |
 `app` | string | the application  in which to sponsor a given BrightID |
 `appUserId` | string | the appUserId linked to the BrightID user being sponsored  |
 
-**Returns:** *Promise‹any›*
+**Returns:** *Promise‹undefined | object | object›*
 
 A hash of the operation if successfully submitted to the BrightID node or an error
 
@@ -183,9 +183,9 @@ ___
 
 ### `Const` unusedSponsorships
 
-▸ **unusedSponsorships**(`app`: string): *Promise‹undefined | number | AxiosError‹any››*
+▸ **unusedSponsorships**(`app`: string): *Promise‹undefined | number›*
 
-*Defined in [appMethods.ts:73](https://github.com/BrightID/brightIdSDK/blob/a07c711/src/appMethods.ts#L73)*
+*Defined in [appMethods.ts:70](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L70)*
 
 **Parameters:**
 
@@ -193,7 +193,7 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `app` | string | the application to retrieve unused sponsorships for  |
 
-**Returns:** *Promise‹undefined | number | AxiosError‹any››*
+**Returns:** *Promise‹undefined | number›*
 
 Returns the number of sponsorships available to the specified `app`
 
@@ -201,9 +201,9 @@ ___
 
 ### `Const` userSponsorshipStatus
 
-▸ **userSponsorshipStatus**(`appUserId`: string): *Promise‹undefined | AxiosError‹any› | object›*
+▸ **userSponsorshipStatus**(`appUserId`: string): *Promise‹object›*
 
-*Defined in [appMethods.ts:159](https://github.com/BrightID/brightIdSDK/blob/a07c711/src/appMethods.ts#L159)*
+*Defined in [appMethods.ts:152](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L152)*
 
 **Parameters:**
 
@@ -211,7 +211,7 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `appUserId` | string | the appUserId string corresponding to a specific user in a BrightID app  |
 
-**Returns:** *Promise‹undefined | AxiosError‹any› | object›*
+**Returns:** *Promise‹object›*
 
 - the sponsorship status for the user
 
@@ -219,9 +219,9 @@ ___
 
 ### `Const` userVerificationStatus
 
-▸ **userVerificationStatus**(`app`: string, `appUserId`: string, `params?`: undefined | object): *Promise‹undefined | AxiosError‹any› | object›*
+▸ **userVerificationStatus**(`app`: string, `appUserId`: string, `params?`: undefined | object): *Promise‹object›*
 
-*Defined in [appMethods.ts:119](https://github.com/BrightID/brightIdSDK/blob/a07c711/src/appMethods.ts#L119)*
+*Defined in [appMethods.ts:114](https://github.com/BrightID/brightIdSDK/blob/cc5b88f/src/appMethods.ts#L114)*
 
 **Parameters:**
 
@@ -231,4 +231,4 @@ Name | Type | Description |
 `appUserId` | string | the appUserId string corresponding to a specific user in a BrightID app |
 `params?` | undefined &#124; object | the query parameters to pass to the signed verification endpoint  |
 
-**Returns:** *Promise‹undefined | AxiosError‹any› | object›*
+**Returns:** *Promise‹object›*
