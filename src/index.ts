@@ -1,7 +1,15 @@
 import {
-  appInformation,
-  signedVerification,
-  sponsorshipInformation,
+  getApp,
+  unusedSponsorships,
+  userVerificationStatus,
+  userSponsorshipStatus,
+  sponsor,
 } from "./appMethods";
 
-export { appInformation, signedVerification, sponsorshipInformation };
+export {
+  getApp,
+  unusedSponsorships,
+  userVerificationStatus,
+  userSponsorshipStatus,
+  sponsor,
+};

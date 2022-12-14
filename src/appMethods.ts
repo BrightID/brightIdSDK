@@ -7,7 +7,7 @@
 import axios from "axios";
 import stringify from "fast-json-stable-stringify";
 import B64 from "base64-js";
-import * as ed from "@noble/ed25519";
+import nacl from "tweetnacl";
 
 /**
  *
@@ -54,11 +54,9 @@ export const getApp = async (app: string) => {
     return res.data as AppData;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.error(err.response?.data);
-      return err;
+      throw err.response?.data;
     } else {
-      console.error(err);
-      return;
+      throw err;
     }
   }
 };
@@ -73,15 +71,13 @@ export const unusedSponsorships = async (app: string) => {
   const endpoint = "https://app.brightid.org/node/v6/apps";
   try {
     const res = await axios.get(`${endpoint}/${app}`);
-    const appData = res.data as AppData;
+    const appData = res.data.data as AppData;
     return appData.unusedSponsorships;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.error(err.response?.data);
-      return err;
+      throw err.response?.data;
     } else {
-      console.error(err);
-      return;
+      throw err;
     }
   }
 };
@@ -133,11 +129,9 @@ export const userVerificationStatus = async (
     return res.data as SignedVerification;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.error(err.response?.data);
-      return err;
+      throw err.response?.data;
     } else {
-      console.error(err);
-      return;
+      throw err;
     }
   }
 };
@@ -162,11 +156,9 @@ export const userSponsorshipStatus = async (appUserId: string) => {
     return res.data as SponsorshipData;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.error(err.response?.data);
-      return err;
+      throw err.response?.data;
     } else {
-      console.error(err);
-      return;
+      throw err;
     }
   }
 };
@@ -191,20 +183,16 @@ type SponsorData = {
 
 /**
  *
- * @param key - the sponsor private key needed for sponsoring a BrightID
+ * @param key - A Base64 string representation of the 64 byte sponsorship private key for the {app}
  * @param app  - the application  in which to sponsor a given BrightID
  * @param appUserId - the appUserId linked to the BrightID user being sponsored
  *
  * @returns {SponsorData} A hash of the operation if successfully submitted to the BrightID node or an error
  */
-export const sponsor = async (
-  key: string | Uint8Array,
-  app: string,
-  appUserId: string
-) => {
+export const sponsor = async (key: string, app: string, appUserId: string) => {
   let endpoint = "http://app.brightid.org/node/v6/operation";
 
-  let sponsorships = unusedSponsorships(app);
+  let sponsorships = await unusedSponsorships(app);
 
   if (typeof sponsorships === "number" && sponsorships < 1)
     return { error: true, errorMessage: "No available sponsorships" };
@@ -223,20 +211,17 @@ export const sponsor = async (
 
   const message = getMessage(op);
   const arrayedMessage = Buffer.from(message);
-
+  const arrayedKey = B64.toByteArray(key);
+  const signature = nacl.sign.detached(arrayedMessage, arrayedKey);
+  op.sig = B64.fromByteArray(signature);
   try {
-    const signature = await ed.sign(arrayedMessage, key);
-    op.sig = B64.fromByteArray(signature);
-
     let res = await axios.post(endpoint, op);
     return res.data as SponsorData;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.error(err.response?.data);
-      return err;
+      throw err.response?.data;
     } else {
-      console.error(err);
-      return err;
+      throw err;
     }
   }
 };
