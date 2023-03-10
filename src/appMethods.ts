@@ -190,7 +190,7 @@ type SponsorData = {
  * @returns {SponsorData} A hash of the operation if successfully submitted to the BrightID node or an error
  */
 export const sponsor = async (key: string, app: string, appUserId: string) => {
-  let endpoint = "http://app.brightid.org/node/v6/operations";
+  let endpoint = "https://app.brightid.org/node/v6/operations";
 
   let sponsorships = await unusedSponsorships(app);
 
